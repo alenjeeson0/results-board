@@ -59,7 +59,11 @@ export default {
   		boxShadow: {
   			sm: 'var(--shadow-sm)',
   			md: 'var(--shadow-md)',
-  			lg: 'var(--shadow-lg)'
+  			lg: 'var(--shadow-lg)',
+  			'2xs': 'var(--shadow-2xs)',
+  			xs: 'var(--shadow-xs)',
+  			xl: 'var(--shadow-xl)',
+  			'2xl': 'var(--shadow-2xl)'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -90,17 +94,20 @@ export default {
   		},
   		fontFamily: {
   			sans: [
-  				'Figtree',
+  				'Poppins',
   				'ui-sans-serif',
   				'system-ui',
-  				'sans-serif',
-  				'Apple Color Emoji',
-  				'Segoe UI Emoji',
-  				'Segoe UI Symbol',
-  				'Noto Color Emoji'
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'Segoe UI',
+  				'Roboto',
+  				'Helvetica Neue',
+  				'Arial',
+  				'Noto Sans',
+  				'sans-serif'
   			],
   			serif: [
-  				'Lora',
+  				'Merriweather',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
