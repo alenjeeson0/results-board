@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +7,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Medal, FileText, Upload, LogOut, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
+import { BulkUploadDialog } from "@/components/BulkUploadDialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data
 const mockAppeals = [
@@ -20,6 +23,29 @@ const mockResults = [
 ];
 
 const AdminDashboard = () => {
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [results, setResults] = useState(mockResults);
+  const { toast } = useToast();
+
+  const handleBulkUpload = (uploadedResults: any[]) => {
+    const newResults = uploadedResults.map((result, index) => ({
+      id: `${results.length + index + 1}`,
+      participantId: result.participantId,
+      name: result.name,
+      event: result.event,
+      score: result.score,
+      rank: result.rank,
+      lastUpdated: new Date().toISOString().split('T')[0],
+    }));
+
+    setResults([...results, ...newResults]);
+    
+    toast({
+      title: "Upload Successful",
+      description: `${uploadedResults.length} results imported successfully.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-sm">
@@ -140,7 +166,7 @@ const AdminDashboard = () => {
                     <CardTitle>Competition Results</CardTitle>
                     <CardDescription>Manage and update competition results</CardDescription>
                   </div>
-                  <Button>
+                  <Button onClick={() => setUploadDialogOpen(true)}>
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Results
                   </Button>
@@ -161,7 +187,7 @@ const AdminDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {mockResults.map((result) => (
+                      {results.map((result) => (
                         <TableRow key={result.id}>
                           <TableCell className="font-medium">{result.participantId}</TableCell>
                           <TableCell>{result.name}</TableCell>
@@ -189,6 +215,12 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      <BulkUploadDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onConfirm={handleBulkUpload}
+      />
     </div>
   );
 };
