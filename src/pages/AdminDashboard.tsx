@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,9 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { StatusBadge } from "@/components/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Medal, FileText, Upload, LogOut, Edit } from "lucide-react";
-import { Link } from "react-router-dom";
 import { BulkUploadDialog } from "@/components/BulkUploadDialog";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock data
 const mockAppeals = [
@@ -23,9 +24,67 @@ const mockResults = [
 ];
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [results, setResults] = useState(mockResults);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          toast({
+            variant: "destructive",
+            title: "Access denied",
+            description: "Please sign in to access the admin portal.",
+          });
+          navigate("/admin");
+          return;
+        }
+
+        // Check if user has admin role
+        const { data: roles, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        if (error || !roles) {
+          await supabase.auth.signOut();
+          toast({
+            variant: "destructive",
+            title: "Access denied",
+            description: "Admin privileges required.",
+          });
+          navigate("/admin");
+          return;
+        }
+
+        setIsAdmin(true);
+      } catch (error) {
+        console.error("Auth check error:", error);
+        navigate("/admin");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAdminAccess();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate("/admin");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate, toast]);
 
   const handleBulkUpload = (uploadedResults: any[]) => {
     const newResults = uploadedResults.map((result, index) => ({
@@ -46,6 +105,30 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+    navigate("/admin");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-sm">
@@ -62,11 +145,9 @@ const AdminDashboard = () => {
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
                 Administrator
               </Badge>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Link>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </div>
           </div>

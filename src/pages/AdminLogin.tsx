@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,18 +6,99 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Check if user has admin role
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        
+        if (roles) {
+          navigate("/admin/dashboard");
+        }
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // This will be replaced with actual authentication
-    navigate("/admin/dashboard");
+    setIsLoading(true);
+
+    try {
+      if (isSignUp) {
+        // Sign up new user
+        const { data, error } = await supabase.auth.signUp({
+          email: credentials.email,
+          password: credentials.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/admin/dashboard`
+          }
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Account created!",
+          description: "You can now sign in with your credentials.",
+        });
+        setIsSignUp(false);
+      } else {
+        // Sign in existing user
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: credentials.email,
+          password: credentials.password,
+        });
+
+        if (error) throw error;
+
+        // Check if user has admin role
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        if (!roles) {
+          await supabase.auth.signOut();
+          throw new Error("Access denied. Admin privileges required.");
+        }
+
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in to admin portal.",
+        });
+        navigate("/admin/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Authentication failed",
+        description: error.message || "Please check your credentials and try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,9 +111,14 @@ const AdminLogin = () => {
               <Shield className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Admin Login</CardTitle>
+              <CardTitle className="text-2xl">
+                {isSignUp ? "Create Admin Account" : "Admin Login"}
+              </CardTitle>
               <CardDescription>
-                Access the administrative portal to manage results and appeals
+                {isSignUp 
+                  ? "Create a new admin account to access the portal"
+                  : "Access the administrative portal to manage results and appeals"
+                }
               </CardDescription>
             </div>
           </CardHeader>
@@ -60,9 +146,20 @@ const AdminLogin = () => {
                   onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
                 />
               </div>
-              <Button type="submit" className="w-full" size="lg">
-                Sign In
+              <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                {isLoading ? "Processing..." : (isSignUp ? "Create Account" : "Sign In")}
               </Button>
+              <div className="text-center text-sm text-muted-foreground">
+                {isSignUp ? "Already have an account?" : "Need to create an account?"}
+                {" "}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-primary underline hover:no-underline"
+                >
+                  {isSignUp ? "Sign in" : "Sign up"}
+                </button>
+              </div>
             </form>
           </CardContent>
         </Card>
