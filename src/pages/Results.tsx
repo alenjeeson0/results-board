@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,25 +9,58 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// Mock data - will be replaced with real database queries
-const mockResults = [
-  { id: "1", participantId: "P1234", name: "John Smith", event: "100m Sprint", category: "Under 18 Male", score: "10.5s", rank: 1 },
-  { id: "2", participantId: "P1235", name: "Sarah Johnson", event: "100m Sprint", category: "Under 18 Female", score: "11.2s", rank: 2 },
-  { id: "3", participantId: "P1236", name: "Mike Davis", event: "Long Jump", category: "Under 16 Male", score: "6.5m", rank: 1 },
-];
+interface Result {
+  id: string;
+  participant_id: string;
+  participant_name: string;
+  event: string;
+  category: string;
+  time: string | null;
+  rank: number | null;
+  points: number | null;
+  status: string;
+}
 
 const Results = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [results, setResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResults = mockResults.filter(result => {
-    const matchesSearch = result.participantId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         result.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesEvent = !selectedEvent || result.event === selectedEvent;
-    const matchesCategory = !selectedCategory || result.category === selectedCategory;
-    return matchesSearch && matchesEvent && matchesCategory;
-  });
+  useEffect(() => {
+    fetchResults();
+  }, [searchTerm, selectedEvent, selectedCategory]);
+
+  const fetchResults = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('search', searchTerm);
+      if (selectedEvent) params.append('event', selectedEvent);
+      if (selectedCategory) params.append('category', selectedCategory);
+
+      const queryString = params.toString();
+      const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-results`;
+      const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+      const response = await fetch(url, {
+        headers: {
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch results');
+      
+      const data = await response.json();
+      setResults(data.results || []);
+    } catch (error) {
+      console.error('Error fetching results:', error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -83,11 +117,15 @@ const Results = () => {
           <CardHeader>
             <CardTitle>Results</CardTitle>
             <CardDescription>
-              {filteredResults.length} result(s) found
+              {loading ? 'Loading...' : `${results.length} result(s) found`}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {filteredResults.length > 0 ? (
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading results...</p>
+              </div>
+            ) : results.length > 0 ? (
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
@@ -96,22 +134,24 @@ const Results = () => {
                       <TableHead>Name</TableHead>
                       <TableHead>Event</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Score</TableHead>
+                      <TableHead>Time</TableHead>
                       <TableHead>Rank</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredResults.map((result) => (
+                    {results.map((result) => (
                       <TableRow key={result.id}>
-                        <TableCell className="font-medium">{result.participantId}</TableCell>
-                        <TableCell>{result.name}</TableCell>
+                        <TableCell className="font-medium">{result.participant_id}</TableCell>
+                        <TableCell>{result.participant_name}</TableCell>
                         <TableCell>{result.event}</TableCell>
                         <TableCell>{result.category}</TableCell>
-                        <TableCell>{result.score}</TableCell>
+                        <TableCell>{result.time || '-'}</TableCell>
                         <TableCell>
-                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
-                            {result.rank}
-                          </span>
+                          {result.rank ? (
+                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
+                              {result.rank}
+                            </span>
+                          ) : '-'}
                         </TableCell>
                       </TableRow>
                     ))}

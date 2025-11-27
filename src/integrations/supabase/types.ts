@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      results: {
+        Row: {
+          category: string
+          created_at: string
+          event: string
+          id: string
+          participant_id: string
+          participant_name: string
+          points: number | null
+          rank: number | null
+          status: string | null
+          time: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          event: string
+          id?: string
+          participant_id: string
+          participant_name: string
+          points?: number | null
+          rank?: number | null
+          status?: string | null
+          time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          event?: string
+          id?: string
+          participant_id?: string
+          participant_name?: string
+          points?: number | null
+          rank?: number | null
+          status?: string | null
+          time?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
