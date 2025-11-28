@@ -91,20 +91,14 @@ export const AddResultDialog = ({
               <Input id="category" value={formData.category} onChange={e => handleChange("category", e.target.value)} required placeholder="e.g. LP, UP, HS, HSS, " />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="time">Time/Score</Label>
-              <Input id="time" value={formData.time} onChange={e => handleChange("time", e.target.value)} placeholder="e.g. 10.5s or 6.2m" />
-            </div>
+            
 
             <div className="space-y-2">
               <Label htmlFor="rank">Rank</Label>
               <Input id="rank" type="number" value={formData.rank} onChange={e => handleChange("rank", e.target.value)} placeholder="e.g. 1" />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="points">Points</Label>
-              <Input id="points" type="number" value={formData.points} onChange={e => handleChange("points", e.target.value)} placeholder="e.g. 100" />
-            </div>
+            
           </div>
 
           <DialogFooter>
