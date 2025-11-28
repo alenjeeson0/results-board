@@ -9,7 +9,7 @@ export const Header = () => {
             <Medal className="h-8 w-8 text-primary" />
             <div>
               <h1 className="text-xl font-bold text-foreground">Bible Kaloltsavam Results </h1>
-              <p className="text-sm text-muted-foreground">Official Results & Appeals Portal</p>
+              <p className="text-sm text-muted-foreground">Official Results from Catechism Diocese of Mandya </p>
             </div>
           </Link>
           <nav className="flex items-center gap-4">
