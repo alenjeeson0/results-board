@@ -103,7 +103,7 @@ const Results = () => {
                       <TableHead>Name</TableHead>
                       <TableHead>Event</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Points</TableHead>
+                      <TableHead>Time</TableHead>
                       <TableHead>Rank</TableHead>
                     </TableRow>
                   </TableHeader>
