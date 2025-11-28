@@ -7,7 +7,7 @@ export const Header = () => {
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             
             <div>
-              <h1 className="font-extrabold text-left font-serif text-3xl text-[#480000]">Bible Kaloltsavam Results </h1>
+              <h1 className="text-left font-serif text-3xl text-[#480000] font-bold">Bible Kaloltsavam Results </h1>
               <p className="text-[#480000] font-serif font-medium text-lg">Official Results from Catechism Diocese of Mandya </p>
             </div>
           </Link>
