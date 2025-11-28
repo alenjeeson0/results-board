@@ -14,7 +14,7 @@ export const Header = () => {
           </Link>
           <nav className="flex items-center gap-4">
             <Button variant="ghost" asChild>
-              <Link to="/">Search Results</Link>
+              <Link to="/">​</Link>
             </Button>
             <Button variant="default" asChild>
               <Link to="/admin">Admin Login</Link>
