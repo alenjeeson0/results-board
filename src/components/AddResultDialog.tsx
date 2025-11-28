@@ -88,7 +88,7 @@ export const AddResultDialog = ({
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Input id="category" value={formData.category} onChange={e => handleChange("category", e.target.value)} placeholder="e.g. Men's Under 18" required />
+              <Input id="category" value={formData.category} onChange={e => handleChange("category", e.target.value)} required placeholder="e.g. LP, UP, HS, HSS, " />
             </div>
 
             <div className="space-y-2">
