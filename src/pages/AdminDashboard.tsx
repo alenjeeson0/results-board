@@ -8,17 +8,7 @@ import { Medal, Plus, LogOut, Edit, Trash2 } from "lucide-react";
 import { AddResultDialog } from "@/components/AddResultDialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -27,42 +17,42 @@ const AdminDashboard = () => {
   const [results, setResults] = useState<any[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     const checkAdminAccess = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        const {
+          data: {
+            session
+          }
+        } = await supabase.auth.getSession();
         if (!session) {
           toast({
             variant: "destructive",
             title: "Access denied",
-            description: "Please sign in to access the admin portal.",
+            description: "Please sign in to access the admin portal."
           });
           navigate("/admin");
           return;
         }
 
         // Check if user has admin role
-        const { data: roles, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-
+        const {
+          data: roles,
+          error
+        } = await supabase.from('user_roles').select('role').eq('user_id', session.user.id).eq('role', 'admin').maybeSingle();
         if (error || !roles) {
           await supabase.auth.signOut();
           toast({
             variant: "destructive",
             title: "Access denied",
-            description: "Admin privileges required.",
+            description: "Admin privileges required."
           });
           navigate("/admin");
           return;
         }
-
         setIsAdmin(true);
         fetchResults();
       } catch (error) {
@@ -72,39 +62,41 @@ const AdminDashboard = () => {
         setIsLoading(false);
       }
     };
-
     checkAdminAccess();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: {
+        subscription
+      }
+    } = supabase.auth.onAuthStateChange(event => {
       if (event === 'SIGNED_OUT') {
         navigate("/admin");
       }
     });
-
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
-
   const fetchResults = async () => {
-    const { data, error } = await supabase
-      .from('results')
-      .select('*')
-      .order('created_at', { ascending: false });
-
+    const {
+      data,
+      error
+    } = await supabase.from('results').select('*').order('created_at', {
+      ascending: false
+    });
     if (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to load results.",
+        description: "Failed to load results."
       });
       return;
     }
-
     setResults(data || []);
   };
-
   const handleAddResult = async (formData: any) => {
-    const { error } = await supabase.from('results').insert({
+    const {
+      error
+    } = await supabase.from('results').insert({
       participant_id: formData.participantId,
       participant_name: formData.name,
       event: formData.event,
@@ -112,84 +104,69 @@ const AdminDashboard = () => {
       time: formData.time || null,
       rank: formData.rank ? parseInt(formData.rank) : null,
       points: formData.points ? parseInt(formData.points) : null,
-      status: 'confirmed',
+      status: 'confirmed'
     });
-
     if (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to add result.",
+        description: "Failed to add result."
       });
       return;
     }
-
     toast({
       title: "Success",
-      description: "Result added successfully.",
+      description: "Result added successfully."
     });
-    
     fetchResults();
   };
-
   const handleEditResult = async (formData: any) => {
     if (!editingResult) return;
-
-    const { error } = await supabase
-      .from('results')
-      .update({
-        participant_id: formData.participantId,
-        participant_name: formData.name,
-        event: formData.event,
-        category: formData.category,
-        time: formData.time || null,
-        rank: formData.rank ? parseInt(formData.rank) : null,
-        points: formData.points ? parseInt(formData.points) : null,
-      })
-      .eq('id', editingResult.id);
-
+    const {
+      error
+    } = await supabase.from('results').update({
+      participant_id: formData.participantId,
+      participant_name: formData.name,
+      event: formData.event,
+      category: formData.category,
+      time: formData.time || null,
+      rank: formData.rank ? parseInt(formData.rank) : null,
+      points: formData.points ? parseInt(formData.points) : null
+    }).eq('id', editingResult.id);
     if (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update result.",
+        description: "Failed to update result."
       });
       return;
     }
-
     toast({
       title: "Success",
-      description: "Result updated successfully.",
+      description: "Result updated successfully."
     });
-    
     setEditingResult(null);
     fetchResults();
   };
-
   const handleDeleteResult = async (id: string) => {
-    const { error } = await supabase
-      .from('results')
-      .delete()
-      .eq('id', id);
-
+    const {
+      error
+    } = await supabase.from('results').delete().eq('id', id);
     if (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to delete result.",
+        description: "Failed to delete result."
       });
       return;
     }
-
     toast({
       title: "Success",
-      description: "Result deleted successfully.",
+      description: "Result deleted successfully."
     });
-    
     setDeletingResultId(null);
     fetchResults();
   };
-
   const openEditDialog = (result: any) => {
     setEditingResult({
       id: result.id,
@@ -199,37 +176,30 @@ const AdminDashboard = () => {
       category: result.category,
       time: result.time || "",
       rank: result.rank?.toString() || "",
-      points: result.points?.toString() || "",
+      points: result.points?.toString() || ""
     });
     setDialogOpen(true);
   };
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
       title: "Signed out",
-      description: "You have been signed out successfully.",
+      description: "You have been signed out successfully."
     });
     navigate("/admin");
   };
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Verifying access...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!isAdmin) {
     return null;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -269,10 +239,10 @@ const AdminDashboard = () => {
               <CardDescription>Recent Updates</CardDescription>
               <CardTitle className="text-4xl text-primary">
                 {results.filter(r => {
-                  const date = new Date(r.created_at);
-                  const today = new Date();
-                  return date.toDateString() === today.toDateString();
-                }).length}
+                const date = new Date(r.created_at);
+                const today = new Date();
+                return date.toDateString() === today.toDateString();
+              }).length}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -289,9 +259,9 @@ const AdminDashboard = () => {
                 <CardDescription>Manage and update competition results</CardDescription>
               </div>
               <Button onClick={() => {
-                setEditingResult(null);
-                setDialogOpen(true);
-              }}>
+              setEditingResult(null);
+              setDialogOpen(true);
+            }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Result
               </Button>
@@ -306,33 +276,27 @@ const AdminDashboard = () => {
                     <TableHead>Name</TableHead>
                     <TableHead>Event</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead>Time/Score</TableHead>
+                    
                     <TableHead>Rank</TableHead>
                     <TableHead>Points</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {results.length === 0 ? (
-                    <TableRow>
+                  {results.length === 0 ? <TableRow>
                       <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                         No results yet. Click "Add Result" to get started.
                       </TableCell>
-                    </TableRow>
-                  ) : (
-                    results.map((result) => (
-                      <TableRow key={result.id}>
+                    </TableRow> : results.map(result => <TableRow key={result.id}>
                         <TableCell className="font-medium">{result.participant_id}</TableCell>
                         <TableCell>{result.participant_name}</TableCell>
                         <TableCell>{result.event}</TableCell>
                         <TableCell>{result.category}</TableCell>
                         <TableCell>{result.time || "-"}</TableCell>
                         <TableCell>
-                          {result.rank ? (
-                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
+                          {result.rank ? <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
                               {result.rank}
-                            </span>
-                          ) : "-"}
+                            </span> : "-"}
                         </TableCell>
                         <TableCell>{result.points || "-"}</TableCell>
                         <TableCell>
@@ -340,19 +304,12 @@ const AdminDashboard = () => {
                             <Button variant="ghost" size="sm" onClick={() => openEditDialog(result)}>
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => setDeletingResultId(result.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => setDeletingResultId(result.id)} className="text-destructive hover:text-destructive">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                      </TableRow>)}
                 </TableBody>
               </Table>
             </div>
@@ -360,15 +317,10 @@ const AdminDashboard = () => {
         </Card>
       </main>
 
-      <AddResultDialog
-        open={dialogOpen}
-        onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) setEditingResult(null);
-        }}
-        onConfirm={editingResult ? handleEditResult : handleAddResult}
-        editData={editingResult}
-      />
+      <AddResultDialog open={dialogOpen} onOpenChange={open => {
+      setDialogOpen(open);
+      if (!open) setEditingResult(null);
+    }} onConfirm={editingResult ? handleEditResult : handleAddResult} editData={editingResult} />
 
       <AlertDialog open={!!deletingResultId} onOpenChange={() => setDeletingResultId(null)}>
         <AlertDialogContent>
@@ -380,17 +332,12 @@ const AdminDashboard = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deletingResultId && handleDeleteResult(deletingResultId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={() => deletingResultId && handleDeleteResult(deletingResultId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
+    </div>;
 };
-
 export default AdminDashboard;
