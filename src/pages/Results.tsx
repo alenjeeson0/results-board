@@ -103,7 +103,7 @@ const Results = () => {
                       <TableHead>Name</TableHead>
                       <TableHead>Event</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Time</TableHead>
+                      
                       <TableHead>Rank</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -113,7 +113,7 @@ const Results = () => {
                         <TableCell>{result.participant_name}</TableCell>
                         <TableCell>{result.event}</TableCell>
                         <TableCell>{result.category}</TableCell>
-                        <TableCell>{result.time || '-'}</TableCell>
+                        
                         <TableCell>
                           {result.rank ? <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
                               {result.rank}
