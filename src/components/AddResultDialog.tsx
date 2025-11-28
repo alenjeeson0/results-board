@@ -78,7 +78,7 @@ export const AddResultDialog = ({
 
             <div className="space-y-2">
               <Label htmlFor="name">Participant Name *</Label>
-              <Input id="name" value={formData.name} onChange={e => handleChange("name", e.target.value)} required placeholder="Participant Name" />
+              <Input id="name" value={formData.name} onChange={e => handleChange("name", e.target.value)} placeholder="e.g. John Smith" required />
             </div>
 
             <div className="space-y-2">
