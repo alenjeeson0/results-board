@@ -298,7 +298,7 @@ const AdminDashboard = () => {
                               {result.rank}
                             </span> : "-"}
                         </TableCell>
-                        <TableCell>{result.points || "-"}</TableCell>
+                        
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Button variant="ghost" size="sm" onClick={() => openEditDialog(result)}>
