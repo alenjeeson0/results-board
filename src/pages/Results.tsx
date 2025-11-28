@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, FileText } from "lucide-react";
-
 interface Result {
   id: string;
   participant_id: string;
@@ -18,18 +17,15 @@ interface Result {
   points: number | null;
   status: string;
 }
-
 const Results = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchResults();
   }, [searchTerm, selectedEvent, selectedCategory]);
-
   const fetchResults = async () => {
     setLoading(true);
     try {
@@ -37,19 +33,15 @@ const Results = () => {
       if (searchTerm) params.append('search', searchTerm);
       if (selectedEvent) params.append('event', selectedEvent);
       if (selectedCategory) params.append('category', selectedCategory);
-
       const queryString = params.toString();
       const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-results`;
       const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-
       const response = await fetch(url, {
         headers: {
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        }
       });
-
       if (!response.ok) throw new Error('Failed to fetch results');
-      
       const data = await response.json();
       setResults(data.results || []);
     } catch (error) {
@@ -59,9 +51,7 @@ const Results = () => {
       setLoading(false);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -80,32 +70,16 @@ const Results = () => {
                 <Label htmlFor="search">Participant ID or Name</Label>
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="search"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
-                  />
+                  <Input id="search" placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-9" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="event">Event (Optional)</Label>
-                <Input
-                  id="event"
-                  placeholder="e.g., 100m Sprint"
-                  value={selectedEvent}
-                  onChange={(e) => setSelectedEvent(e.target.value)}
-                />
+                <Input id="event" value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)} placeholder="e.g. Bible Reading" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Category (Optional)</Label>
-                <Input
-                  id="category"
-                  placeholder="e.g., Under 18 Male"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                />
+                <Input id="category" placeholder="e.g., Under 18 Male" value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} />
               </div>
             </div>
           </CardContent>
@@ -119,12 +93,9 @@ const Results = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="text-center py-12">
+            {loading ? <div className="text-center py-12">
                 <p className="text-muted-foreground">Loading results...</p>
-              </div>
-            ) : results.length > 0 ? (
-              <div className="rounded-md border">
+              </div> : results.length > 0 ? <div className="rounded-md border">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -137,36 +108,27 @@ const Results = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {results.map((result) => (
-                      <TableRow key={result.id}>
+                    {results.map(result => <TableRow key={result.id}>
                         <TableCell className="font-medium">{result.participant_id}</TableCell>
                         <TableCell>{result.participant_name}</TableCell>
                         <TableCell>{result.event}</TableCell>
                         <TableCell>{result.category}</TableCell>
                         <TableCell>{result.time || '-'}</TableCell>
                         <TableCell>
-                          {result.rank ? (
-                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
+                          {result.rank ? <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-sm">
                               {result.rank}
-                            </span>
-                          ) : '-'}
+                            </span> : '-'}
                         </TableCell>
-                      </TableRow>
-                    ))}
+                      </TableRow>)}
                   </TableBody>
                 </Table>
-              </div>
-            ) : (
-              <div className="text-center py-12">
+              </div> : <div className="text-center py-12">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground mb-4">No results found. Try adjusting your search.</p>
-              </div>
-            )}
+              </div>}
           </CardContent>
         </Card>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Results;
