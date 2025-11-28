@@ -16,7 +16,7 @@ export const Header = () => {
               <Link to="/">​</Link>
             </Button>
             <Button variant="default" asChild>
-              <Link to="/admin">Admin Login</Link>
+              <Link to="/admin" className="font-serif">Admin Login</Link>
             </Button>
           </nav>
         </div>
