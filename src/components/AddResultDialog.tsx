@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+
 interface ResultFormData {
   participantId: string;
   name: string;
@@ -13,20 +14,15 @@ interface ResultFormData {
   rank: string;
   points: string;
 }
+
 interface AddResultDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (result: ResultFormData) => void;
-  editData?: ResultFormData & {
-    id: string;
-  };
+  editData?: ResultFormData & { id: string };
 }
-export const AddResultDialog = ({
-  open,
-  onOpenChange,
-  onConfirm,
-  editData
-}: AddResultDialogProps) => {
+
+export const AddResultDialog = ({ open, onOpenChange, onConfirm, editData }: AddResultDialogProps) => {
   const [formData, setFormData] = useState<ResultFormData>({
     participantId: editData?.participantId || "",
     name: editData?.name || "",
@@ -34,19 +30,19 @@ export const AddResultDialog = ({
     category: editData?.category || "",
     time: editData?.time || "",
     rank: editData?.rank || "",
-    points: editData?.points || ""
+    points: editData?.points || "",
   });
+
   const handleChange = (field: keyof ResultFormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onConfirm(formData);
     handleClose();
   };
+
   const handleClose = () => {
     setFormData({
       participantId: "",
@@ -55,12 +51,15 @@ export const AddResultDialog = ({
       category: "",
       time: "",
       rank: "",
-      points: ""
+      points: "",
     });
     onOpenChange(false);
   };
+
   const isValid = formData.participantId && formData.name && formData.event && formData.category;
-  return <Dialog open={open} onOpenChange={handleClose}>
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{editData ? "Edit Result" : "Add New Result"}</DialogTitle>
@@ -73,37 +72,78 @@ export const AddResultDialog = ({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="participantId">Participant ID *</Label>
-              <Input id="participantId" value={formData.participantId} onChange={e => handleChange("participantId", e.target.value)} required placeholder="Participant ID" />
+              <Input
+                id="participantId"
+                value={formData.participantId}
+                onChange={(e) => handleChange("participantId", e.target.value)}
+                placeholder="e.g. P1234"
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Participant Name *</Label>
-              <Input id="name" value={formData.name} onChange={e => handleChange("name", e.target.value)} placeholder="e.g. John Smith" required />
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="e.g. John Smith"
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="event">Event *</Label>
-              <Input id="event" value={formData.event} onChange={e => handleChange("event", e.target.value)} placeholder="e.g. 100m Sprint" required />
+              <Input
+                id="event"
+                value={formData.event}
+                onChange={(e) => handleChange("event", e.target.value)}
+                placeholder="e.g. 100m Sprint"
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Input id="category" value={formData.category} onChange={e => handleChange("category", e.target.value)} placeholder="e.g. Men's Under 18" required />
+              <Input
+                id="category"
+                value={formData.category}
+                onChange={(e) => handleChange("category", e.target.value)}
+                placeholder="e.g. Men's Under 18"
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="time">Time/Score</Label>
-              <Input id="time" value={formData.time} onChange={e => handleChange("time", e.target.value)} placeholder="e.g. 10.5s or 6.2m" />
+              <Input
+                id="time"
+                value={formData.time}
+                onChange={(e) => handleChange("time", e.target.value)}
+                placeholder="e.g. 10.5s or 6.2m"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="rank">Rank</Label>
-              <Input id="rank" type="number" value={formData.rank} onChange={e => handleChange("rank", e.target.value)} placeholder="e.g. 1" />
+              <Input
+                id="rank"
+                type="number"
+                value={formData.rank}
+                onChange={(e) => handleChange("rank", e.target.value)}
+                placeholder="e.g. 1"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="points">Points</Label>
-              <Input id="points" type="number" value={formData.points} onChange={e => handleChange("points", e.target.value)} placeholder="e.g. 100" />
+              <Input
+                id="points"
+                type="number"
+                value={formData.points}
+                onChange={(e) => handleChange("points", e.target.value)}
+                placeholder="e.g. 100"
+              />
             </div>
           </div>
 
@@ -118,5 +158,6 @@ export const AddResultDialog = ({
           </DialogFooter>
         </form>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
