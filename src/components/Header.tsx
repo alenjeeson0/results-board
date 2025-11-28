@@ -1,16 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Medal } from "lucide-react";
-
 export const Header = () => {
-  return (
-    <header className="border-b border-border bg-card shadow-sm">
+  return <header className="border-b border-border bg-card shadow-sm">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Medal className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-xl font-bold text-foreground">Competition Results</h1>
+              <h1 className="text-xl font-bold text-foreground">Bible Kaloltsavam Results </h1>
               <p className="text-sm text-muted-foreground">Official Results & Appeals Portal</p>
             </div>
           </Link>
@@ -24,6 +22,5 @@ export const Header = () => {
           </nav>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
