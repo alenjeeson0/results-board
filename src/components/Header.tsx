@@ -18,9 +18,6 @@ export const Header = () => {
             <Button variant="ghost" asChild>
               <Link to="/">Search Results</Link>
             </Button>
-            <Button variant="ghost" asChild>
-              <Link to="/submit-appeal">Submit Appeal</Link>
-            </Button>
             <Button variant="default" asChild>
               <Link to="/admin">Admin Login</Link>
             </Button>
