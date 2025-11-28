@@ -66,21 +66,12 @@ const Results = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="search">Participant ID or Name</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="search" placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-9" />
-                </div>
-              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="event">Event (Optional)</Label>
                 <Input id="event" value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)} placeholder="e.g. Bible Reading" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category (Optional)</Label>
-                <Input id="category" placeholder="e.g., Under 18 Male" value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} />
-              </div>
+              
             </div>
           </CardContent>
         </Card>
