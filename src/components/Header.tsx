@@ -13,10 +13,10 @@ export const Header = () => {
           </Link>
           <nav className="flex items-center gap-4">
             <Button variant="ghost" asChild>
-              <Link to="/">​</Link>
+              
             </Button>
             <Button variant="default" asChild>
-              <Link to="/admin" className="font-serif">Admin Login</Link>
+              <Link to="/admin" className="font-serif text-white">Admin Login</Link>
             </Button>
           </nav>
         </div>
