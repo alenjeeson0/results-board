@@ -8,7 +8,7 @@ export const Header = () => {
             
             <div>
               <h1 className="font-extrabold text-left font-serif text-3xl text-[#480000]">Bible Kaloltsavam Results </h1>
-              <p className="text-sm text-muted-foreground">Official Results from Catechism Diocese of Mandya </p>
+              <p className="text-[#480000] font-serif font-medium text-lg">Official Results from Catechism Diocese of Mandya </p>
             </div>
           </Link>
           <nav className="flex items-center gap-4">
