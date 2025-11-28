@@ -278,7 +278,7 @@ const AdminDashboard = () => {
                     <TableHead>Category</TableHead>
                     
                     <TableHead>Rank</TableHead>
-                    <TableHead>Points</TableHead>
+                    <TableHead>Rank</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
