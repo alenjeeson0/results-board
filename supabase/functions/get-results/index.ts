@@ -25,11 +25,12 @@ Deno.serve(async (req) => {
 
     console.log('Fetching results with filters:', { searchTerm, event, category });
 
-    // Build query - sort by event first, then rank within each event
+    // Build query - sort by event, then category, then rank
     let query = supabase
       .from('results')
       .select('*')
       .order('event', { ascending: true })
+      .order('category', { ascending: true })
       .order('rank', { ascending: true, nullsFirst: false });
 
     // Apply filters
